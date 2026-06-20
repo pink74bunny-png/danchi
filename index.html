@@ -1,121 +1,181 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="theme-color" content="#050808">
-  <meta name="color-scheme" content="dark">
-  <meta name="mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="午前二時">
-  <title>午前二時の留守番電話</title>
-  <meta name="description" content="1997年の古い団地を舞台にした、ブラウザで遊べるオリジナル・ホラーサウンドノベル。">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500&family=Noto+Serif+JP:wght@400;500;600&display=swap" rel="stylesheet">
-  <link rel="manifest" href="manifest.webmanifest">
-  <link rel="icon" href="assets/icons/icon-192.png" sizes="192x192">
-  <link rel="apple-touch-icon" href="assets/icons/icon-192.png">
-  <link rel="stylesheet" href="css/styles.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<title>午前二時の留守番電話</title>
+<meta name="description" content="1997年、古い団地を舞台にしたホラーサウンドノベル「午前二時の留守番電話」">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@400;500;600&family=Zen+Old+Mincho:wght@400;600&family=Noto+Serif+JP:wght@400;500&family=Noto+Sans+JP:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <noscript>このゲームを遊ぶにはJavaScriptを有効にしてください。</noscript>
 
-  <main id="app" class="app">
-    <div id="orientationHint" class="orientation-hint" role="status">横画面にすると、より遊びやすくなります。</div>
+<div id="app">
+  <div id="game-frame">
 
-    <section id="gameFrame" class="game-frame" aria-label="午前二時の留守番電話 ゲーム画面">
-      <div id="backgroundLayer" class="background-layer" aria-hidden="true"></div>
-      <div id="characterLayer" class="character-layer" aria-hidden="true"></div>
-      <div class="vignette" aria-hidden="true"></div>
-      <div class="scanlines" aria-hidden="true"></div>
-      <div class="noise" aria-hidden="true"></div>
-      <div id="flicker" class="flicker" aria-hidden="true"></div>
-      <div id="sceneFlash" class="scene-flash" aria-hidden="true"></div>
+    <!-- 背景レイヤー群 -->
+    <div id="bg-layer"></div>
+    <div id="bg-noise"></div>
+    <div id="bg-scanlines"></div>
+    <div id="bg-vignette"></div>
+    <div id="bg-flash"></div>
 
-      <section id="titleScreen" class="screen title-screen is-active" aria-label="タイトル画面">
-        <div class="title-wrap">
-          <p class="title-kicker">1997 / KASUMI HEIGHTS</p>
-          <h1>午前二時の<br class="mobile-break">留守番電話</h1>
-          <p class="title-subtitle">THE ANSWERING MACHINE AT 2:00 A.M.</p>
+    <!-- 人物シルエット -->
+    <div id="character-layer"></div>
+
+    <!-- ============== タイトル画面 ============== -->
+    <div id="title-screen" role="region" aria-label="タイトル画面">
+      <div id="title-logo">
+        <div class="main">午前二時の留守番電話</div>
+        <div class="sub">A.M. 2:00 ANSWERING MACHINE</div>
+      </div>
+      <nav id="title-menu" aria-label="タイトルメニュー">
+        <div class="title-menu-item" data-action="new-game" tabindex="0" role="button" aria-label="はじめから">はじめから</div>
+        <div class="title-menu-item" data-action="continue" tabindex="0" role="button" aria-label="つづきから">つづきから</div>
+        <div class="title-menu-item" data-action="chapter-select" tabindex="0" role="button" aria-label="章を選ぶ">章を選ぶ</div>
+        <div class="title-menu-item" data-action="settings" tabindex="0" role="button" aria-label="設定">設定</div>
+        <div class="title-menu-item" data-action="endings" tabindex="0" role="button" aria-label="記録">記録</div>
+      </nav>
+    </div>
+
+    <!-- ============== エンディングバナー ============== -->
+    <div id="ending-banner" role="status">
+      <div class="ending-banner-text" id="ending-banner-text"></div>
+    </div>
+
+    <!-- ============== 選択肢レイヤー ============== -->
+    <div id="choice-layer" role="listbox" aria-label="選択肢"></div>
+
+    <!-- ============== テキストウィンドウ ============== -->
+    <div id="text-window" role="region" aria-live="polite">
+      <div id="speaker-name"></div>
+      <div id="main-text"></div>
+      <div id="next-indicator" aria-hidden="true"></div>
+    </div>
+
+    <!-- ゲーム中メニューボタン -->
+    <button id="menu-toggle-btn" aria-label="メニューを開く"></button>
+    <div id="skip-indicator" aria-hidden="true">SKIP</div>
+
+    <!-- ============== サイドメニュー ============== -->
+    <div id="menu-overlay"></div>
+    <aside id="side-menu" aria-label="ゲームメニュー">
+      <div class="side-menu-title">MENU</div>
+      <div class="side-menu-item" data-action="save" tabindex="0" role="button">セーブ</div>
+      <div class="side-menu-item" data-action="load" tabindex="0" role="button">ロード</div>
+      <div class="side-menu-item" data-action="backlog" tabindex="0" role="button">バックログ</div>
+      <div class="side-menu-item" data-action="toggle-auto" tabindex="0" role="button" id="auto-toggle-item">オート：OFF</div>
+      <div class="side-menu-item" data-action="toggle-skip" tabindex="0" role="button" id="skip-toggle-item">スキップ：OFF</div>
+      <div class="side-menu-item" data-action="settings" tabindex="0" role="button">設定</div>
+      <div class="side-menu-item" data-action="title" tabindex="0" role="button">タイトルへ戻る</div>
+    </aside>
+
+    <!-- ============== セーブ画面 ============== -->
+    <div class="panel" id="panel-save" aria-label="セーブ画面">
+      <div class="panel-header">
+        <div class="panel-title">セーブ</div>
+        <div class="panel-close" data-action="close-panel" tabindex="0" role="button" aria-label="閉じる">閉じる</div>
+      </div>
+      <div class="slot-grid" id="save-slot-grid"></div>
+    </div>
+
+    <!-- ============== ロード画面 ============== -->
+    <div class="panel" id="panel-load" aria-label="ロード画面">
+      <div class="panel-header">
+        <div class="panel-title">ロード</div>
+        <div class="panel-close" data-action="close-panel" tabindex="0" role="button" aria-label="閉じる">閉じる</div>
+      </div>
+      <div class="slot-grid" id="load-slot-grid"></div>
+    </div>
+
+    <!-- ============== バックログ画面 ============== -->
+    <div class="panel" id="panel-backlog" aria-label="バックログ画面">
+      <div class="panel-header">
+        <div class="panel-title">バックログ</div>
+        <div class="panel-close" data-action="close-panel" tabindex="0" role="button" aria-label="閉じる">閉じる</div>
+      </div>
+      <div id="backlog-list"></div>
+    </div>
+
+    <!-- ============== 設定画面 ============== -->
+    <div class="panel" id="panel-settings" aria-label="設定画面">
+      <div class="panel-header">
+        <div class="panel-title">設定</div>
+        <div class="panel-close" data-action="close-panel" tabindex="0" role="button" aria-label="閉じる">閉じる</div>
+      </div>
+
+      <div class="setting-row">
+        <div class="setting-label">文字表示速度</div>
+        <div class="setting-control">
+          <input type="range" id="setting-text-speed" min="5" max="80" step="5" aria-label="文字表示速度">
         </div>
-        <nav id="titleMenu" class="title-menu" aria-label="タイトルメニュー">
-          <button type="button" data-title-action="new" aria-label="はじめから"><span class="menu-cursor">▶</span>はじめから</button>
-          <button type="button" data-title-action="continue" aria-label="つづきから"><span class="menu-cursor">▶</span>つづきから</button>
-          <button type="button" data-title-action="chapters" aria-label="章を選ぶ"><span class="menu-cursor">▶</span>章を選ぶ</button>
-          <button type="button" data-title-action="settings" aria-label="設定"><span class="menu-cursor">▶</span>設定</button>
-          <button type="button" data-title-action="records" aria-label="記録"><span class="menu-cursor">▶</span>記録</button>
-        </nav>
-        <div class="title-footer"><span>CLICK / TAP / ENTER</span><button id="installButton" class="install-button" type="button" aria-label="ホーム画面に追加" hidden>ホーム画面に追加</button><span id="titleClock">02:00:00</span></div>
-      </section>
-
-      <section id="novelScreen" class="screen novel-screen" aria-label="ゲーム本編">
-        <header class="novel-header">
-          <div><span id="chapterLabel" class="chapter-label">PROLOGUE</span><span id="storyClock" class="story-clock">01:48</span></div>
-          <div class="novel-actions">
-            <button id="mobileLogButton" class="icon-button mobile-only-action" type="button" aria-label="バックログを開く"><span aria-hidden="true">LOG</span></button>
-            <button id="mobileAutoButton" class="icon-button mobile-only-action" type="button" aria-label="オート再生を切り替える" aria-pressed="false"><span aria-hidden="true">AUTO</span></button>
-            <button id="openMenuButton" class="icon-button" type="button" aria-label="ゲームメニューを開く"><span aria-hidden="true">MENU</span></button>
-          </div>
-        </header>
-        <div id="sceneCaption" class="scene-caption" aria-hidden="true"></div>
-        <div id="choicePanel" class="choice-panel" role="listbox" aria-label="選択肢"></div>
-        <div id="textWindow" class="text-window" role="button" tabindex="0" aria-label="文章を表示。クリックまたはEnterで進む">
-          <div id="speakerName" class="speaker-name"></div>
-          <p id="storyText" class="story-text"></p>
-          <span id="nextIndicator" class="next-indicator" aria-hidden="true">▼</span>
+      </div>
+      <div class="setting-row">
+        <div class="setting-label">BGM音量</div>
+        <div class="setting-control">
+          <input type="range" id="setting-bgm-volume" min="0" max="100" step="5" aria-label="BGM音量">
         </div>
-        <div id="statusToast" class="status-toast" role="status"></div>
-      </section>
-
-      <aside id="sideMenu" class="side-menu" aria-label="ゲームメニュー" aria-hidden="true">
-        <div class="side-menu-header"><span>GAME MENU</span><button id="closeMenuButton" class="icon-button" type="button" aria-label="ゲームメニューを閉じる">×</button></div>
-        <nav>
-          <button type="button" data-panel="save" aria-label="セーブ画面を開く">セーブ</button>
-          <button type="button" data-panel="load" aria-label="ロード画面を開く">ロード</button>
-          <button type="button" data-panel="backlog" aria-label="バックログを開く">バックログ</button>
-          <button type="button" data-action="auto" aria-label="オート再生を切り替える">オート <span id="autoState">OFF</span></button>
-          <button type="button" data-action="skip" aria-label="既読スキップを切り替える">スキップ <span id="skipState">OFF</span></button>
-          <button type="button" data-panel="settings" aria-label="設定を開く">設定</button>
-          <button type="button" data-action="title" aria-label="タイトルへ戻る">タイトルへ戻る</button>
-        </nav>
-      </aside>
-
-      <div id="modalLayer" class="modal-layer" aria-hidden="true">
-        <section id="modalPanel" class="modal-panel" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
-          <header class="modal-header">
-            <div><p class="modal-kicker">SYSTEM</p><h2 id="modalTitle">設定</h2></div>
-            <button id="closeModalButton" class="icon-button" type="button" aria-label="画面を閉じる">×</button>
-          </header>
-          <div id="modalContent" class="modal-content"></div>
-        </section>
       </div>
-
-      <div id="confirmLayer" class="confirm-layer" aria-hidden="true">
-        <section class="confirm-dialog" role="alertdialog" aria-modal="true" aria-labelledby="confirmTitle">
-          <h2 id="confirmTitle">確認</h2><p id="confirmText"></p>
-          <div class="confirm-actions"><button id="confirmCancel" type="button">キャンセル</button><button id="confirmOk" type="button">決定</button></div>
-        </section>
+      <div class="setting-row">
+        <div class="setting-label">効果音音量</div>
+        <div class="setting-control">
+          <input type="range" id="setting-se-volume" min="0" max="100" step="5" aria-label="効果音音量">
+        </div>
       </div>
-
-      <button id="soundUnlock" class="sound-unlock" type="button" aria-label="音声を有効にする">SOUND ON</button>
-
-      <div id="installHelp" class="install-help" hidden>
-        <section class="install-help-panel" role="dialog" aria-modal="true" aria-labelledby="installHelpTitle">
-          <p class="modal-kicker">MOBILE</p>
-          <h2 id="installHelpTitle">ホーム画面に追加</h2>
-          <p id="installHelpText">ブラウザのメニューから「ホーム画面に追加」を選んでください。</p>
-          <button id="closeInstallHelp" class="system-button" type="button" aria-label="案内を閉じる">閉じる</button>
-        </section>
+      <div class="setting-row">
+        <div class="setting-label">ミュート</div>
+        <div class="setting-control">
+          <div class="toggle-btn" id="setting-mute-toggle" tabindex="0" role="button" aria-label="ミュート切り替え">OFF</div>
+        </div>
       </div>
-    </section>
-  </main>
+      <div class="setting-row">
+        <div class="setting-label">画面の点滅・揺れ演出</div>
+        <div class="setting-control">
+          <div class="toggle-btn" id="setting-shake-toggle" tabindex="0" role="button" aria-label="画面揺れ演出の切り替え">ON</div>
+        </div>
+      </div>
+      <div class="setting-row">
+        <div class="setting-label">フルスクリーン</div>
+        <div class="setting-control">
+          <div class="toggle-btn" id="setting-fullscreen-toggle" tabindex="0" role="button" aria-label="フルスクリーン切り替え">OFF</div>
+        </div>
+      </div>
+    </div>
 
-  <script src="js/scenario.js" defer></script>
-  <script src="js/storage.js" defer></script>
-  <script src="js/audio.js" defer></script>
-  <script src="js/game.js" defer></script>
-  <script src="js/pwa.js" defer></script>
+    <!-- ============== エンディング記録画面 ============== -->
+    <div class="panel" id="panel-endings" aria-label="エンディング記録画面">
+      <div class="panel-header">
+        <div class="panel-title">記録 ― エンディング一覧</div>
+        <div class="panel-close" data-action="close-panel" tabindex="0" role="button" aria-label="閉じる">閉じる</div>
+      </div>
+      <div id="ending-list"></div>
+    </div>
+
+    <!-- ============== 章選択画面 ============== -->
+    <div class="panel" id="panel-chapters" aria-label="章選択画面">
+      <div class="panel-header">
+        <div class="panel-title">章を選ぶ</div>
+        <div class="panel-close" data-action="close-panel" tabindex="0" role="button" aria-label="閉じる">閉じる</div>
+      </div>
+      <div id="chapter-list"></div>
+    </div>
+
+  </div>
+
+  <!-- 横画面推奨オーバーレイ（スマホ縦持ち時、任意で表示） -->
+  <div id="rotate-hint">
+    <div class="rotate-icon" aria-hidden="true">⟳</div>
+    <p>横画面でのプレイを推奨します。<br>このままでも縦画面でプレイできます。</p>
+    <button id="rotate-hint-close" aria-label="このまま続ける">このまま続ける</button>
+  </div>
+</div>
+
+<script src="scenario.js"></script>
+<script src="backgrounds.js"></script>
+<script src="audio.js"></script>
+<script src="save.js"></script>
+<script src="engine.js"></script>
 </body>
 </html>
